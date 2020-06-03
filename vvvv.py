@@ -28,8 +28,8 @@ def gen_data():
     return all_top20_country
 
 # colors = ['rgba(50, 171, 96, 0.6)', 'rgba(50, 171, 96, 0.6)' ]
-y = np.array([7, 10, 12, 15, 19, 28, 25, 31, 33, 43, 50, 59, 67, 70, 73, 79, 82, 89, 93, 96])
-colors =np.array(['rgb(255,255,255)']*y.shape[0])
+# y = np.array([7, 10, 12, 15, 19, 28, 25, 31, 33, 43, 50, 59, 67, 70, 73, 79, 82, 89, 93, 96])
+# colors =np.array(['rgb(255,255,255)']*y.shape[0])
 
 
 def plot_animate(dict_data):
@@ -40,13 +40,17 @@ def plot_animate(dict_data):
         'x':  first_record['confirmed'],
         'y':  first_record['country'],
         'orientation': 'h',
-        'width': 0.1,
+        'width': 0.7,
         'text': [i + ', ' + str(j) for i, j in zip(first_record['country'], first_record['confirmed'])],
+        'textfont': {
+            'family': 'Arial',
+            # 'size': 90
+        },
         # 'text': dict_data[list(dict_data.keys())[0]]['country'] + dict_data[list(dict_data.keys())[0]]['confirmed'],
         'textposition': 'outside',
         'marker': {
-              'color': colors,
-              # 'color': 'rgba(50, 171, 96, 0.6)',
+              # 'color': colors,
+              'color': 'rgba(50, 171, 96, 0.6)',
                 # 'line': {
                 #     'color': 'rgba(50, 171, 96, 1.0)',
                 #     'width': 1
@@ -59,11 +63,14 @@ def plot_animate(dict_data):
           'linecolor': '#000',
           'linewidth': 1,
           'zeroline': False,
+           # 'autorange': False,
+            # 'range': []
         },
         'yaxis': {
           'gridcolor': '#FFFFFF',
           'linecolor': '#000',
           'linewidth': 1,
+          'autorange' :'reversed'  # Y 轴倒置
         },
         'title': 'Covid confirmed top 20 countries',
         'hovermode': 'closest',
@@ -125,8 +132,12 @@ def plot_animate(dict_data):
                 'y': date_data['country'],
                 'text':  [i + ', ' + str(j) for i, j in zip(date_data['country'], date_data['confirmed'])],
                 'marker': {
-                    'color': colors
-                }
+                    'color': 'rgba(50, 171, 96, 0.6)',
+                },
+                'textfont': {
+                    'family': 'Arial',
+                    # 'size': 10
+                },
             }],
             'name': str(date)
         }
