@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-import plotly.graph_objects as go
 import pandas as pd
 import plotly.io as pio
 import numpy as np
 
 number = 15
-duration = 400
+duration = 1000
 
 
 def gen_color(country_data):
@@ -24,14 +23,16 @@ def gen_data():
     cov_data = cov_data.drop(['Province/State', 'Lat', 'Long'], axis=1)
     # 对每个国家每日总数进行统计
     cov_data = cov_data.groupby(['Country/Region']).sum()
-    # 统计每日总数前15的国家
-    all_top20_country = {}
+    # 计算每日全球总确诊人数
+    cov_data.loc['Row_sum'] = cov_data.apply(lambda x: x.sum())
+    all_top_countries = {}
     for i in cov_data.columns:
+        #  统计每日总数前15的国家
         data_i = cov_data.sort_values(by=i, ascending=False)
         data_i = data_i[i]
-        all_top20_country[i] = {'country': data_i.index.tolist()[:number], 'confirmed': data_i.tolist()[:number]}
+        all_top_countries[i] = {'country': data_i.index.tolist()[1:number], 'confirmed': data_i.tolist()[1:number], 'total':data_i.tolist()[0]}
 
-    return all_top20_country
+    return all_top_countries
 
 
 def plot_animate(dict_data, color_country):
@@ -55,12 +56,13 @@ def plot_animate(dict_data, color_country):
       'layout': {
         "autosize": True,
         "height": 880,
+        # "width": 1200,
         'xaxis': {
           'gridcolor': '#FFFFFF',
           'linecolor': '#000',
           'linewidth': 1,
           'zeroline': False,
-            'side': 'top',
+          'side': 'top',
         },
         'yaxis': {
           'gridcolor': '#FFFFFF',
@@ -82,10 +84,10 @@ def plot_animate(dict_data, color_country):
                   'redraw': True
                 },
                 'fromcurrent': True,
-                 "mode": "immediate",
+                "mode": "immediate",
                 'transition': {
                   'duration': duration,
-                  'easing': 'quadratic-in-out'
+                  'easing':'quadratic-in-out' # 'easeOutQuad'  #'easeOutSine' # 'easeInSine' #'quadratic-in-out'
                 }
               }]
             },
@@ -121,7 +123,7 @@ def plot_animate(dict_data, color_country):
             "font": {"size": 20},
             "prefix": "Date:",
             "visible": True,
-            "xanchor": "right"
+            "xanchor": "left",
         },
         "transition": {"duration": duration, "easing": "cubic-in-out"},
         "pad": {"b": 10, "t": 50},
@@ -142,9 +144,13 @@ def plot_animate(dict_data, color_country):
                 },
                 'textfont': {
                     'family': 'Arial',
+                    'size': 10
                 },
             }],
-            'name': str(date)
+            'name': str(date),
+            'layout': {
+                'title': 'Global Countries Confirmed top {} (Data updated once a week) '.format(number) + '<br> total:'+ str(date_data['total']) ,
+            }
         }
         figure['frames'].append(frame)
         slider_step = {
@@ -152,18 +158,19 @@ def plot_animate(dict_data, color_country):
                 [date],
                 {
                     'frame': {
-                        'duration': 300,
+                        'duration': duration,
                         'redraw': True
                     },
                     'mode': 'immediate',
                     'transition': {
-                        'duration': 300
+                        'duration': duration
                     }
                 }
             ],
             'label': date,
             'method': 'animate'
         }
+
         sliders_dict['steps'].append(slider_step)
 
     figure['layout']['sliders'] = [sliders_dict]
@@ -173,6 +180,7 @@ def plot_animate(dict_data, color_country):
 
 if __name__ == "__main__":
     data = gen_data()
+    # print(data)
     color_countries = gen_color(data)
     plot_animate(data, color_countries)
 
